@@ -15,6 +15,12 @@
     --proj-dialog-input-sz: 24px;
     --delDialog-normal-sz: 32px;
     --delDialog-emp-sz: 52px;
+/* 
+    --todo-title-sz: 36px;
+    --todo-des-sz: 24px; */
+    --todo-status-green: #8DB35599;
+    --todo-status-red: #D9000099;
+    --todo-status-yellow: #FFEA9399;
 
     --green: #e0ffcd;
     --yellow: #fdffcd;
@@ -27,6 +33,14 @@
     --p3-col: #ffafcc;  
     --p4-col: #bde0fe;
     --p5-col: #a2d2ff;
+    --p6-col: #00000000;
+
+    --p1-col-light: #cdb4db55;
+    --p2-col-light: #ffc8dd55;
+    --p3-col-light: #ffafcc55;  
+    --p4-col-light: #bde0fe55;
+    --p5-col-light: #a2d2ff55;
+    --p6-col-light: #00000000;
 
     --base-font-family: 'kk', 'Times New Roman', Times, serif;
 
@@ -86,19 +100,35 @@
     height: 100%;
 
     .tdWin{
-        display: grid;
-        grid-auto-rows: calc(85vh / 6);
+        display: flex;
+        flex-direction: column;
         max-height: 85%;
         overflow-y: auto;
-        .todoDIV {
-            display: flex;
-            flex-direction: column;
-            gap: 10%;
-            font-size: var(--todo-para-size);
-            .title {
-                font-size: var(--todo-title-size);
+        .priCont{
+            display: grid;
+            grid-auto-rows: 185px;
+            row-gap: 0.5rem;
+            position: relative;
+            border: 3px solid var(--theme-color-light); 
+            &::after {
+                position: absolute;
+                left: 20px;
+                top: 20px;
+                content: var(--content);
+                color: var(--theme-color);
+            }       
+            .todoDIV {
+                display: grid;
+                grid-template: 2fr 1fr / 1fr 6fr 8fr;
+                overflow-y: auto;
+                gap: 10%;
+                font-size: var(--todo-para-size);
+                .title {
+                    font-size: var(--todo-title-size);
+                }
             }
         }
+
         .emptyHint {
             font-style: italic;
             font-size: var(--hint-text-sz);

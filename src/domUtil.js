@@ -1,7 +1,8 @@
 import { projectUtil } from "./projectUtil";
-import { addHours, addMinutes, addYears, format } from "date-fns";
+import { addHours, addMinutes, addYears, format, parseISO } from "date-fns";
 import plusIcon from "./asset/plus-icon.svg";
 import deleteIcon from "./asset/delete-icon.svg";
+import { createTodoItem } from "./todoUtil";
 
 // iife create domUtil module
 export const domUtil = (() => {
@@ -87,19 +88,24 @@ export const domUtil = (() => {
         }
         // >= 1 task exists, create priority containers for them
         else{
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 6; i++) {
                 // skip empty cont
                 if (todoArr[i].length == 0) continue;
-                // priority cont
+                // priority container only for 0 - 4
                 const tempCont = document.createElement("div");
                 tempCont.className = "priCont";
                 // set color theme var
-                tempCont.setAttribute("style", `--theme-color: var(--p${i+1}-col)`);
+                tempCont.setAttribute("style", `--theme-color-light: var(--p${i+1}-col-light); --content: "Priority: ${i+1}"; --theme-color: var(--p${i+1}-col)`);
+                // turn into arr then sort based on DateObj
+                const sortedTasks = Array.from(todoArr[i], ([k, v]) => v).sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
+                sortedTasks.forEach(todoObj => {
+                    const title = document.createElement("p");
+                    title.textContent = todoObj.description;
+                    const statusCont = document.createElement("div");
+                    const statusIcon = document.createElement("img");
+                    const statusDes = document.createElement("div");
+                });
 
-                // const title = document.createElement("p");
-                // const statusCont = document.createElement("div");
-                // const statusIcon = document.createElement("img");
-                // const statusDes = document.createElement("div");
             }
 
         }
@@ -125,11 +131,13 @@ export const domUtil = (() => {
         para.textContent = "Add project";
 
         const input1 = document.createElement("input");
+        input1.id = "name";
         input1.type = "text";
         input1.name = "name";
         input1.required = true;
         const label1 = document.createElement("label");
         label1.textContent = "Name";
+        label1.htmlFor = "name";
 
         const para1 = document.createElement("p");
         para1.textContent = "Color";
@@ -162,7 +170,6 @@ export const domUtil = (() => {
         const btnCont = document.createElement("div");
         btnCont.className = "btnCont";
         const cancel = document.createElement("button");
-        cancel.value = "";
         cancel.type = "submit";
         cancel.textContent = "Cancel";
         const confirm = document.createElement("button");
@@ -174,7 +181,10 @@ export const domUtil = (() => {
         projDialog.appendChild(projForm);
         // retrieve proj input & update backend / frontend
         projDialog.addEventListener("close", () => {
-            
+            if (!projDialog.returnValue) return;
+            const formContent = Object.fromEntries(new FormData(projForm));  
+            const tempProj = new projectUtil(formContent.name, formContent.color);
+            domUtil.projRefresher();
         });
 
         // todoBtn
@@ -186,10 +196,11 @@ export const domUtil = (() => {
         const headline = document.createElement("p");
         headline.textContent = "Add to-do";
         const titleL = document.createElement("label");
+        titleL.textContent = "Title";
         titleL.htmlFor = "titleI";
         const titleI = document.createElement("input");
         titleI.id = "titleI";
-        titleI.name = "titleI";
+        titleI.name = "title";
         titleI.type = "text";
         titleI.required = true;
 
@@ -203,6 +214,7 @@ export const domUtil = (() => {
 
         const dueL = document.createElement("label");
         dueL.htmlFor = "dueI";
+        dueL.textContent = "Deadline";
         const dueI = document.createElement("input");
         dueI.id = "dueI";
         dueI.name = "due";
@@ -216,9 +228,10 @@ export const domUtil = (() => {
 
         const priL = document.createElement("label");
         priL.htmlFor = "priI";
+        priL.textContent = "Priority (0 for no priority)";
         const priI = document.createElement("input");
         priI.id = "priI";
-        priI.name = "priI";
+        priI.name = "priority";
         priI.type = "number";
         priI.min = "0";
         priI.max = "5";
@@ -227,7 +240,6 @@ export const domUtil = (() => {
         const btnWrap = document.createElement("div");
         btnWrap.className = "btnCont";
         const noBtn = document.createElement("button");
-        noBtn.value = "";
         noBtn.textContent = "cancel";
         noBtn.type = "submit";
         const yesBtn = document.createElement("button");
@@ -319,7 +331,19 @@ export const domUtil = (() => {
         addText.textContent = "Add a new task";
         tdBtn.appendChild(plusIcon1);
         tdBtn.addEventListener("click", () => {
+            toDoForm.reset();
+            toDoDialog.showModal();
+        });
 
+        toDoDialog.addEventListener("close", () => {
+            if (!toDoDialog.returnValue) return;
+
+            const formContent = Object.fromEntries(new FormData(toDoForm));
+            const currProj = projectUtil.projectArr.get(projectUtil.selectedProjID);
+            const tempTodo = createTodoItem(formContent.title, formContent.description, parseISO(formContent.due), formContent.priority);
+            const pos = (tempTodo.priority == 0) ? 5 : (tempTodo.priority - 1);
+            currProj.itemsArr[pos].set(tempTodo.uid, tempTodo);
+            projectUtil.todoLstRefresher();
         });
         
         mainPanel.append(todoWindow, tdBtn);
