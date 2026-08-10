@@ -2,6 +2,7 @@ import { projectUtil } from "./projectUtil";
 import { addHours, addMinutes, addYears, format, parseISO } from "date-fns";
 import plusIcon from "./asset/plus-icon.svg";
 import deleteIcon from "./asset/delete-icon.svg";
+import completeIcon from "./asset/complete-icon.svg";
 import { createTodoItem } from "./todoUtil";
 
 // iife create domUtil module
@@ -88,22 +89,63 @@ export const domUtil = (() => {
         }
         // >= 1 task exists, create priority containers for them
         else{
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 7; i++) {
                 // skip empty cont
                 if (todoArr[i].length == 0) continue;
                 // priority container only for 0 - 4
                 const tempCont = document.createElement("div");
                 tempCont.className = "priCont";
                 // set color theme var
-                tempCont.setAttribute("style", `--theme-color-light: var(--p${i+1}-col-light); --content: "Priority: ${i+1}"; --theme-color: var(--p${i+1}-col)`);
+                if (i == 6) {
+                    tempCont.setAttribute("style", `--theme-color-light: var(--p${i+1}-col-light); --content: "Completed Tasks, we still remember you.."; --theme-color: var(--p${i+1}-col)`);
+                }
+                else if (i == 5) {
+                    tempCont.setAttribute("style", `--theme-color-light: var(--p${i+1}-col-light); --content: ""; --theme-color: var(--p${i+1}-col)`);
+                }
+                else {
+                    tempCont.setAttribute("style", `--theme-color-light: var(--p${i+1}-col-light); --content: "Priority: ${i+1}"; --theme-color: var(--p${i+1}-col)`);
+                }
                 // turn into arr then sort based on DateObj
                 const sortedTasks = Array.from(todoArr[i], ([k, v]) => v).sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
                 sortedTasks.forEach(todoObj => {
+                    const todoDIV = document.createElement("div");
+                    todoDIV.className = "todoDIV";
+
+                    const doneBtn = document.createElement("img");
+                    doneBtn.src = completeIcon;
+                    doneBtn.alt = "Mark as complete";
+                    doneBtn.className = "doneBtn";
+                    doneBtn.addEventListener("click", () => {
+                        const id = todoObj.uid;
+                        const selectedProj = projectUtil.projectArr.get(projectUtil.selectedProjID);
+                        const pos = (todoObj.priority == 0) ? 5 : (todoObj.priority - 1);
+                        todoObj.finishTask();
+                        todoDIV.classList.toggle("done");
+                        // mark it as done
+                        if (todoObj.done) {
+                            // move to last map in items arr
+                            selectedProj.itemsArr[6].set(id, todoObj);
+                            selectedProj.itemsArr[pos].delete(id);
+                        }
+                        // revive the task from last map
+                        else {
+                            selectedProj.itemsArr[pos].set(id, todoObj);
+                            selectedProj.itemsArr[6].delete(id);
+                        }
+                        domUtil.todoLstRefresher();
+                    });
+
                     const title = document.createElement("p");
-                    title.textContent = todoObj.description;
-                    const statusCont = document.createElement("div");
+                    title.textContent = todoObj.title;
+                    title.className = "title";
+
                     const statusIcon = document.createElement("img");
                     const statusDes = document.createElement("div");
+                    const now = new Date().getTime();
+                    const hrDiff = +((now - todoObj.dueDate.getTime()) / 3600000).toFixed(2);
+     
+                    
+
                 });
 
             }
@@ -290,7 +332,18 @@ export const domUtil = (() => {
         });
         deletedialog.append(title, disclaimer, cancelBtn, confirmBtn);
 
-
+        // todoEditDialog
+        const editDialog = document.createElement("dialog");
+        editDialog.className = "editDialog";
+        const editForm = document.createElement("form");
+        const moveToProj = document.createElement("select");
+        moveToProj.className = "moveToProj";
+        moveToProj.required = true;
+        projectUtil.projectArr.forEach(projObj => {
+            const name = projObj.name;
+            const opt = document.createElement("option");
+            opt.value = projObj.id;
+        });
 
         // sidebar
         const sideBar = document.createElement("div");

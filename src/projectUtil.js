@@ -6,8 +6,8 @@ class projectUtil{
 
     static defaultProjID;
 
-    // items arr (5 priorities maps, 6 for no priotity set)
-    itemsArr = Array.from({length: 6}, () => new Map());
+    // items arr (5 priorities maps, 6 for no priotity set, 7 for finished)
+    itemsArr = Array.from({length: 7}, () => new Map());
 
     constructor(name = "untitled", color = "blue", isDefault = 0){
         this.name = name;

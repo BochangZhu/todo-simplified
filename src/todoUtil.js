@@ -9,6 +9,7 @@ function createTodoItem(tit = "No Title", des = "No Description", due = new Date
     let dueDate = due;
     let priority = pri;
     let uid = crypto.randomUUID();
+    let done = false;
     
     // edit funcs
     function changeTitle(newTitle){
@@ -17,6 +18,10 @@ function createTodoItem(tit = "No Title", des = "No Description", due = new Date
 
     function changeDes(newDes){
         this.description = newDes;
+    }
+
+    function finishTask(){
+        this.done = !(this.done);
     }
     
     function extendDue(days, hrs, mins){

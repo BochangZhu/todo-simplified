@@ -34,6 +34,7 @@
     --p4-col: #bde0fe;
     --p5-col: #a2d2ff;
     --p6-col: #00000000;
+    --p7-col: #808080;
 
     --p1-col-light: #cdb4db55;
     --p2-col-light: #ffc8dd55;
@@ -41,6 +42,9 @@
     --p4-col-light: #bde0fe55;
     --p5-col-light: #a2d2ff55;
     --p6-col-light: #00000000;
+    --p7-col-light: #80808055;
+
+    --dim-text: #696969;
 
     --base-font-family: 'kk', 'Times New Roman', Times, serif;
 
@@ -117,14 +121,28 @@
                 content: var(--content);
                 color: var(--theme-color);
             }       
-            .todoDIV {
+            .todoDIV{
                 display: grid;
-                grid-template: 2fr 1fr / 1fr 6fr 8fr;
-                overflow-y: auto;
+                align-items: center;
+                grid-template-columns: 1fr 6fr 8fr 1fr;
                 gap: 10%;
                 font-size: var(--todo-para-size);
                 .title {
                     font-size: var(--todo-title-size);
+                    font-weight: bold;
+                    overflow: auto;
+                }
+                .doneBtn {
+                    place-self: center;
+                }
+            }
+            .todoDIV.done{
+                text-decoration-line: line-through;
+                text-decoration-color: var(--dim-text);
+                text-decoration-thickness: 1.5px;
+                color: var(--dim-text);
+                .doneBtn {
+                    filter: invert(1);
                 }
             }
         }
