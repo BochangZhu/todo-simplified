@@ -1,8 +1,12 @@
 import { projectUtil } from "./projectUtil";
-import { addHours, addMinutes, addYears, format, parseISO } from "date-fns";
+import { addHours, addMinutes, addYears, format, formatRelative, isThisWeek, isToday, isYesterday, parseISO } from "date-fns";
+
 import plusIcon from "./asset/plus-icon.svg";
 import deleteIcon from "./asset/delete-icon.svg";
 import completeIcon from "./asset/complete-icon.svg";
+import goodStatus from "./asset/good-status.svg";
+import warningStatus from "./asset/attention-status.svg";
+
 import { createTodoItem } from "./todoUtil";
 
 // iife create domUtil module
@@ -107,6 +111,7 @@ export const domUtil = (() => {
                 }
                 // turn into arr then sort based on DateObj
                 const sortedTasks = Array.from(todoArr[i], ([k, v]) => v).sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
+                // render todoObjs to current priCont
                 sortedTasks.forEach(todoObj => {
                     const todoDIV = document.createElement("div");
                     todoDIV.className = "todoDIV";
@@ -140,16 +145,69 @@ export const domUtil = (() => {
                     title.className = "title";
 
                     const statusIcon = document.createElement("img");
+                    statusIcon.className = "statusIcon";
                     const statusDes = document.createElement("div");
-                    const now = new Date().getTime();
-                    const hrDiff = +((now - todoObj.dueDate.getTime()) / 3600000).toFixed(2);
-     
-                    
+                    statusDes.className = "statusDes";
+                    // show different Icon based on now - deadline
+                    const dueDate = todoObj.dueDate;
+                    const now = new Date();
+                    const hrDiff = (dueDate.getTime() - now.getTime()) / 3600000;
+                    // format statusIcon
+                    if (hrDiff <= 0) {
+                        statusIcon.src = warningStatus;
+                        statusIcon.alt = "Deadline has passed..";
+                        statusIcon.setAttribute("status", "bad");
+                        statusDes.setAttribute("status", "bad");
+                        
+                    }
+                    else if (hrDiff <= 4) {
+                        statusIcon.src = goodStatus;
+                        statusIcon.alt = "LOCK IN";
+                        statusIcon.setAttribute("status", "mid");
+                        statusDes.setAttribute("status", "mid");
+                    }
+                    else {
+                        statusIcon.src = goodStatus;
+                        statusIcon.alt = "Take your time";
+                        statusIcon.setAttribute("status", "good");
+                        statusDes.setAttribute("status", "good");
+                    }
 
+                    // customize dueDate display
+                    // case for monday - sunday
+                    if (isThisWeek(dueDate, {weekStartsOn: 1}) && !isToday(dueDate) && !isYesterday(dueDate)) {
+                        statusDes.textContent = format(dueDate, "eeee h:mm a");
+                    }
+                    // keyword case
+                    else {
+                        const customFormat = {
+                            lastWeek: "'Last Week' h:mm a", // AM/PM
+                            yesterday: "'Yesterday' h:mm a",
+                            today: "'Today' h:mm a",
+                            tomorrow: "'Tomorrow' h:mm a",
+                            nextWeek: "'Next week' h:mm a",
+                            other: "yyyy-MM-dd h:mm a"
+                        };
+
+                        const opt = {
+                            weekStartsOn : 1,
+                            locale: {
+                                formatRelative: (token) => customFormat[token]
+                            }
+                        };
+                        statusDes.textContent = formatRelative(dueDate, now, opt);
+                    }
+                    const expandIcon = document.createElement("img");
+                    expandIcon.className = "expandIcon";
+                    expandIcon.src = expandIcon;
+                    expandIcon.addEventListener("click", () => {
+                        // opens the editTodo dialog
+                    });
+
+                    todoDIV.append(doneBtn, title, statusIcon, statusDes, expandIcon);
+                    tempCont.appendChild(todoDIV);
                 });
-
             }
-
         }
 
     }

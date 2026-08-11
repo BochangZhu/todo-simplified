@@ -18,9 +18,9 @@
 /* 
     --todo-title-sz: 36px;
     --todo-des-sz: 24px; */
-    --todo-status-green: #8DB35599;
-    --todo-status-red: #D9000099;
-    --todo-status-yellow: #FFEA9399;
+    --todo-status-green: brightness(0) saturate(100%) invert(69%) sepia(37%) saturate(526%) hue-rotate(42deg) brightness(90%) contrast(87%);;
+    --todo-status-red: brightness(0) saturate(100%) invert(16%) sepia(43%) saturate(6678%) hue-rotate(355deg) brightness(98%) contrast(123%);
+    --todo-status-yellow: brightness(0) saturate(100%) invert(83%) sepia(46%) saturate(336%) hue-rotate(356deg) brightness(102%) contrast(103%);
 
     --green: #e0ffcd;
     --yellow: #fdffcd;
@@ -123,8 +123,9 @@
             }       
             .todoDIV{
                 display: grid;
+                position: relative;
                 align-items: center;
-                grid-template-columns: 1fr 6fr 8fr 1fr;
+                grid-template-columns: 1fr 6fr 1fr 6fr;
                 gap: 10%;
                 font-size: var(--todo-para-size);
                 .title {
@@ -134,6 +135,27 @@
                 }
                 .doneBtn {
                     place-self: center;
+                }
+
+                :is(.statusIcon, .statusDes)[status=good] {
+                    filter: var(--todo-status-green);
+                }
+                :is(.statusIcon, .statusDes)[status=mid] {
+                    filter: var(--todo-status-yellow);
+                }
+                :is(.statusIcon, .statusDes)[status=bad] {
+                    filter: var(--todo-status-red);
+                }
+                
+                .expandIcon {
+                    width: 45px;
+                    height: 45px;
+                    position: absolute;
+                    right: 10px;
+                    bottom: 10px;
+                    &:hover {
+                        filter: brightness(60%);
+                    }
                 }
             }
             .todoDIV.done{
