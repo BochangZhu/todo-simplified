@@ -4,6 +4,8 @@ class projectUtil{
 
     static selectedProjID;
 
+    static selectedTodoID;
+
     static defaultProjID;
 
     // items arr (5 priorities maps, 6 for no priotity set, 7 for finished)

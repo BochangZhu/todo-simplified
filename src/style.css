@@ -8,6 +8,9 @@
     --dialog-bs-width: 500px;
     --dialog-bs-height: 600px;
 
+    --dialog-extend-wd: 800px;
+    --dialog-extend-hei: 1000px;
+
     --cancel-btn-bg-col: linear-gradient(to right, #64965e, #81ff8a);
     --confirm-btn-bg-col: linear-gradient(to right, #ff025e, #d70652);
 
@@ -15,6 +18,9 @@
     --proj-dialog-input-sz: 24px;
     --delDialog-normal-sz: 32px;
     --delDialog-emp-sz: 52px;
+
+    --editDialog-normal-sz: 24px;
+    --editDialog-des-sz: 18px;
 /* 
     --todo-title-sz: 36px;
     --todo-des-sz: 24px; */
@@ -276,6 +282,39 @@ body {
             }
             &>button:last-child{
                 background: var(--confirm-btn-bg-col);
+            }
+        }
+    }
+}
+
+.editDialog {
+    width: var(--dialog-extend-wd);
+    height: var(--dialog-extend-hei);
+    .editForm {
+        display: grid;
+        position: relative;
+        align-items: center;
+        font-family: var(--base-font-family);
+        font-size: var(--editDialog-normal-sz);
+        grid-template-rows: 2fr 4fr 8fr 2fr repeat(6, 1fr) 1.5fr;
+        .settingIcon {
+            width: 45px;
+            height: 45px;
+        }
+        .desInput {
+            font-size: var(--editDialog-des-sz);
+        }
+        .iconCont {
+            width: 20%;
+            display: flex;
+            gap: 20px;
+        }
+        .doneBtn {
+            position: relative;
+            top: 10px;
+            right: 10px;
+            &:hover {
+                filter: brightness(60%);
             }
         }
     }

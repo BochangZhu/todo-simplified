@@ -6,6 +6,8 @@ import deleteIcon from "./asset/delete-icon.svg";
 import completeIcon from "./asset/complete-icon.svg";
 import goodStatus from "./asset/good-status.svg";
 import warningStatus from "./asset/attention-status.svg";
+import settingIcon from "./asset/setting-icon.svg";
+import desIcon from "./asset/des-icon.svg";
 
 import { createTodoItem } from "./todoUtil";
 
@@ -115,6 +117,7 @@ export const domUtil = (() => {
                 sortedTasks.forEach(todoObj => {
                     const todoDIV = document.createElement("div");
                     todoDIV.className = "todoDIV";
+                    todoDIV.id = todoObj.id;
 
                     const doneBtn = document.createElement("img");
                     doneBtn.src = completeIcon;
@@ -394,14 +397,84 @@ export const domUtil = (() => {
         const editDialog = document.createElement("dialog");
         editDialog.className = "editDialog";
         const editForm = document.createElement("form");
+        editForm.className = "editForm";
+        // Basic section
+        const basicCont = document.createElement("div");
+        basicCont.className = "iconCont";
+        const settingIcon = document.createElement("img");
+        settingIcon.src = settingIcon;
+        settingIcon.className = "settingIcon";
+        basicCont.appendChild(settingIcon, document.createTextNode("Basic"));
+
+        const titleInput = document.createElement("input");
+        titleInput.className = "titleInput";
+        const desInput = document.createElement("input");
+        titleInput.className = "desInput";
+        // Setting section
+        const settingCont = document.createElement("div");
+        const settingIconD = settingIcon.cloneNode(true);
+        settingCont.append(settingIconD, document.createTextNode("Setting"));
+
+        const dueLabel = document.createElement("label");
+        dueLabel.htmlFor = "dueInput";
+        dueLabel.textContent = "Deadline";
+        const dueInput = document.createElement("input");
+        dueInput.id = "dueInput";
+        dueInput.type = "datetime-local";
+        // dueInput.addEventListener("focus", () => {
+        //     dueInput.min = format(addMinutes(new Date(), 1), "yyyy-MM-dd'T'HH:mm");
+        //     dueInput.max = format(addYears(new Date(), 100), "yyyy-MM-dd'T'HH:mm");
+        // });
+
+        const priLabel = document.createElement("label");
+        priLabel.htmlFor = "priInput";
+        priLabel.textContent = "Priority";
+        const priInput = document.createElement("input");
+        priInput.id = "priInput";
+        priInput.type = "number";
+        priInput.min = "0";
+        priInput.max = "5";
+
+        const moveLabel = document.createElement("label");
+        moveLabel.htmlFor = "moveToProj";
+        moveLabel.textContent = "Move to";
         const moveToProj = document.createElement("select");
-        moveToProj.className = "moveToProj";
-        moveToProj.required = true;
-        projectUtil.projectArr.forEach(projObj => {
-            const name = projObj.name;
-            const opt = document.createElement("option");
-            opt.value = projObj.id;
+        moveToProj.id = "moveToProj";
+        // projectUtil.projectArr.forEach(projObj => {
+        //     const name = projObj.name;
+        //     const id = projObj.id;
+        //     const opt = document.createElement("option");
+        //     opt.value = id;
+        //     opt.textContent = name;
+        //     if (id == projectUtil.selectedProjID) {
+        //         opt.selected = true;
+        //         opt.textContent += " (Current)";
+        //     }
+        // });
+
+        const BTNCont = document.createElement("div");
+        BTNCont.className = "btnCont";
+        const left = document.createElement("button");
+        left.textContent = "Cancel";
+        left.className = "left";
+        const right = document.createElement("button");
+        right.textContent = "Save";
+        right.className = "right";
+        BTNCont.append(left, right);
+
+        editForm.append(basicCont, titleInput, desInput, settingCont, dueLabel, dueInput, priLabel, priInput, moveLabel, moveToProj, BTNCont);
+        // complete Icon
+        const doneBtn = document.createElement("img");
+        doneBtn.src = completeIcon;
+        doneBtn.alt = "Mark as complete";
+        doneBtn.className = "doneBtn";
+        doneBtn.addEventListener("click", () => {
+            // cancel the todoEditDialog
+            left.click();
+            // click the doneBtn of the curr Todo
+            document.querySelector(`.todoDIV#${projectUtil.selectedTodoID} > .doneBtn`).click();
         });
+
 
         // sidebar
         const sideBar = document.createElement("div");
@@ -461,7 +534,7 @@ export const domUtil = (() => {
 
 
         
-        document.body.append(sideBar, mainPanel, projDialog, toDoDialog, deletedialog);
+        document.body.append(sideBar, mainPanel, projDialog, toDoDialog, deletedialog, editDialog);
 
     };
 
