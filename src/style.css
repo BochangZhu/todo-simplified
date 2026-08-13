@@ -132,6 +132,7 @@
                 position: relative;
                 align-items: center;
                 grid-template-columns: 1fr 6fr 1fr 6fr;
+                border-bottom: 3px dashed gray;
                 gap: 10%;
                 font-size: var(--todo-para-size);
                 .title {

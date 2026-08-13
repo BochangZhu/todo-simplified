@@ -204,12 +204,44 @@ export const domUtil = (() => {
                     expandIcon.className = "expandIcon";
                     expandIcon.src = expandIcon;
                     expandIcon.addEventListener("click", () => {
-                        // opens the editTodo dialog
+                        // set currTodoID to be this task
+                        projectUtil.selectedTodoID = todoObj.id;
+                        // pre-fill inputs of the edit Dialog
+                        const editForm = document.querySelector(".editForm");
+
+                        editForm.querySelector(".titleInput").value = todoObj.title;
+
+                        editForm.querySelector(".desInput").value = todoObj.description;
+
+                        const dueInput = editForm.querySelector("#dueInput");
+                        const due = todoObj.dueDate;
+                        dueInput.value = format(due, "yyyy-MM-dd'T'HH:mm");
+                        dueInput.min = dueInput.value;
+                        dueInput.max = format(addYears(due, 100), "yyyy-MM-dd'T'HH:mm");
+                        
+                        editForm.querySelector("#priInput").value = todoObj.priority;
+
+                        const move = editForm.querySelector("#moveToProj");
+                        move.replaceChildren();
+                        projectUtil.projectArr.forEach(projObj => {
+                            const name = projObj.name;
+                            const id = projObj.id;
+                            const opt = document.createElement("option");
+                            opt.value = id;
+                            opt.textContent = name;
+                            if (id == projectUtil.selectedProjID) {
+                                opt.selected = true;
+                                opt.textContent += " (current)";
+                            }
+                        });
+
+                        document.querySelector(".editDialog").showModal();
                     });
 
                     todoDIV.append(doneBtn, title, statusIcon, statusDes, expandIcon);
                     tempCont.appendChild(todoDIV);
                 });
+                tdWin.appendChild(tempCont);
             }
         }
 
@@ -407,9 +439,13 @@ export const domUtil = (() => {
         basicCont.appendChild(settingIcon, document.createTextNode("Basic"));
 
         const titleInput = document.createElement("input");
+        titleInput.type = "text";
         titleInput.className = "titleInput";
+        titleInput.name = "title";
         const desInput = document.createElement("input");
+        desInput.type = "text";
         titleInput.className = "desInput";
+        desInput.name = "description";
         // Setting section
         const settingCont = document.createElement("div");
         const settingIconD = settingIcon.cloneNode(true);
@@ -421,16 +457,14 @@ export const domUtil = (() => {
         const dueInput = document.createElement("input");
         dueInput.id = "dueInput";
         dueInput.type = "datetime-local";
-        // dueInput.addEventListener("focus", () => {
-        //     dueInput.min = format(addMinutes(new Date(), 1), "yyyy-MM-dd'T'HH:mm");
-        //     dueInput.max = format(addYears(new Date(), 100), "yyyy-MM-dd'T'HH:mm");
-        // });
+        dueInput.name = "due";
 
         const priLabel = document.createElement("label");
         priLabel.htmlFor = "priInput";
         priLabel.textContent = "Priority";
         const priInput = document.createElement("input");
         priInput.id = "priInput";
+        priInput.name = "priority";
         priInput.type = "number";
         priInput.min = "0";
         priInput.max = "5";
@@ -440,17 +474,8 @@ export const domUtil = (() => {
         moveLabel.textContent = "Move to";
         const moveToProj = document.createElement("select");
         moveToProj.id = "moveToProj";
-        // projectUtil.projectArr.forEach(projObj => {
-        //     const name = projObj.name;
-        //     const id = projObj.id;
-        //     const opt = document.createElement("option");
-        //     opt.value = id;
-        //     opt.textContent = name;
-        //     if (id == projectUtil.selectedProjID) {
-        //         opt.selected = true;
-        //         opt.textContent += " (Current)";
-        //     }
-        // });
+        moveToProj.name = "move";
+
 
         const BTNCont = document.createElement("div");
         BTNCont.className = "btnCont";
@@ -460,9 +485,8 @@ export const domUtil = (() => {
         const right = document.createElement("button");
         right.textContent = "Save";
         right.className = "right";
+        right.value = "save";
         BTNCont.append(left, right);
-
-        editForm.append(basicCont, titleInput, desInput, settingCont, dueLabel, dueInput, priLabel, priInput, moveLabel, moveToProj, BTNCont);
         // complete Icon
         const doneBtn = document.createElement("img");
         doneBtn.src = completeIcon;
@@ -473,6 +497,70 @@ export const domUtil = (() => {
             left.click();
             // click the doneBtn of the curr Todo
             document.querySelector(`.todoDIV#${projectUtil.selectedTodoID} > .doneBtn`).click();
+        });
+
+        editForm.append(basicCont, titleInput, desInput, settingCont, dueLabel, dueInput, priLabel, priInput, moveLabel, moveToProj, BTNCont, doneBtn);
+        editDialog.appendChild(editForm);
+        // update todo after saving
+        editDialog.addEventListener("close", () => {
+            if (!editDialog.returnValue) return;
+            // get target TODO
+            const todoID = projectUtil.selectedTodoID;
+            const currProj = projectUtil.projectArr.get(projectUtil.selectedProjID);
+            let currTodo;
+            let oldPos;
+            currProj.itemsArr.forEach((priMap, index) => {
+                const temp = priMap.get(todoID);
+                if (temp) {
+                    currTodo = temp;
+                    oldPos = index;
+                }
+            });
+            const formData = Object.fromEntries(new FormData(editForm));
+
+            const oldTitle = currTodo.title;
+            const title = formData.title;
+            if (oldTitle != title) {
+                currTodo.title = title;
+            }
+
+            const oldDes = currTodo.description;
+            const description = formData.description;
+
+            if (oldDes != description) {
+                currTodo.description = description;
+            }
+
+            const oldDue = currTodo.dueDate;
+            const due = new Date(formData.due);
+
+            if (oldDue.getTime() != due.getTime()) {
+                currTodo.dueDate = due;
+            }
+
+            const oldProjID = projectUtil.selectedProjID;
+            const newProjID = formData.move;
+            const oldPri = currTodo.priority;
+            const newPri = formData.priority;
+
+            if (oldProjID != newProjID) {
+                const newProj = projectUtil.projectArr.get(newProjID);
+                currProj.itemsArr[oldPos].delete(todoID);
+                if (oldPri != newPri) {
+                    newProj.itemsArr[]
+                }
+                
+            }
+
+            if (oldPri != newPri) {
+                currTodo.priority = newPri;
+                // if finished todo skip in order to keep inside the last priority Map
+                if (currTodo.done) break;
+                currProj.itemsArr[oldPos].delete(todoID);
+                const newPos = (newPri == 0) ? 5 : (newPri - 1);
+                currProj.itemsArr[newPos].set(todoID, currTodo);
+            }
+            
         });
 
 
