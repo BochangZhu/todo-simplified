@@ -94,6 +94,9 @@
                 color: white;
                 background-color: var(--color);
             }
+            &:hover {
+                filter: brightness(75%);
+            }
         }
     }
 

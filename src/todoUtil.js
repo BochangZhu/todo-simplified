@@ -12,40 +12,20 @@ function createTodoItem(tit = "No Title", des = "No Description", due = new Date
     let done = false;
     
     // edit funcs
-    function changeTitle(newTitle){
+    function changeTitle(newTitle) {
         this.title = newTitle;
     }
 
-    function changeDes(newDes){
+    function changeDes(newDes) {
         this.description = newDes;
     }
 
-    function finishTask(){
+    function finishTask() {
         this.done = !(this.done);
     }
-    
-    function extendDue(days, hrs, mins){
-        this.dueDate = add(this.dueDate, {
-            days: days,
-            hours: hrs,
-            minutes: mins
-        });
-    }
 
-    function shrinkDue(days, hrs, mins) {
-        this.dueDate = sub(this.dueDate, {
-            days: days,
-            hours: hrs,
-            minutes: mins
-        });
-    }
-
-    function incPriority(){
-        this.priority += 1;
-    }
-
-    function decPriority(){
-        this.priority -= 1;
+    function changeDue(newDate) {
+        this.dueDate = newDate;
     }
 
     return {
@@ -56,10 +36,8 @@ function createTodoItem(tit = "No Title", des = "No Description", due = new Date
         uid,
         changeTitle,
         changeDes,
-        extendDue,
-        shrinkDue,
+        changeDue,
     };
-
 }
 
 export {createTodoItem};

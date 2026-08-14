@@ -76,7 +76,7 @@ export const domUtil = (() => {
         const id = projectUtil.selectedProjID;
         projCont.querySelector(`-${id}`).click();
     }
-    // need to refine logic of building dynamic todoList interface / time logic
+
     function todoLstRefresher(){
         // clean old todoList data
         const tdWin = document.querySelector(".tdWin");
@@ -249,12 +249,12 @@ export const domUtil = (() => {
 
     function domInit(){
         // create a default project
-        const defaultProj = new projectUtil("Default Project", undefined, 1);
+        const defaultProj = new projectUtil("Default Project", "blue", 1);
         defaultProj.markProjAsDefault();
 
         // dialogs for projBtn and todoBtn and deleteBtn
 
-        // projBtn
+        // projDialog
         const projDialog = document.createElement("dialog");
         projDialog.className = "projDialog";
 
@@ -299,9 +299,6 @@ export const domUtil = (() => {
             tempLabel.append(tempInput, document.createTextNode(`${color}`));
             colorCont.appendChild(tempLabel);
         });
-
-        projForm.append(para, label1, input1, para1, colorCont);
-
         const btnCont = document.createElement("div");
         btnCont.className = "btnCont";
         const cancel = document.createElement("button");
@@ -312,17 +309,19 @@ export const domUtil = (() => {
         confirm.type = "submit";
         confirm.textContent = "Create!";
         btnCont.append(cancel, confirm);
-        projForm.appendChild(btnCont);
+
+        projForm.append(para, label1, input1, para1, colorCont, btnCont);
         projDialog.appendChild(projForm);
         // retrieve proj input & update backend / frontend
         projDialog.addEventListener("close", () => {
             if (!projDialog.returnValue) return;
             const formContent = Object.fromEntries(new FormData(projForm));  
-            const tempProj = new projectUtil(formContent.name, formContent.color);
+            const temp = new projectUtil(formContent.name, formContent.color);
+            projectUtil.selectedProjID = temp.id;
             domUtil.projRefresher();
         });
 
-        // todoBtn
+        // todoDialog
         const toDoDialog = document.createElement("dialog");
         toDoDialog.className = "toDoDialog";
         const toDoForm = document.createElement("form");
@@ -385,7 +384,7 @@ export const domUtil = (() => {
         toDoForm.append(headline, titleL, titleI, desL, desI, dueL, dueI, priL, priI, btnWrap);
         toDoDialog.appendChild(toDoForm);
 
-        // deleteBtn
+        // deleteDialog
         const deletedialog = document.createElement("dialog");
         deletedialog.className = "deleteDialog";
 
@@ -521,46 +520,63 @@ export const domUtil = (() => {
             const oldTitle = currTodo.title;
             const title = formData.title;
             if (oldTitle != title) {
-                currTodo.title = title;
+                currTodo.changeTitle(title);
             }
 
             const oldDes = currTodo.description;
             const description = formData.description;
 
             if (oldDes != description) {
-                currTodo.description = description;
+                currTodo.changeDes(description);
             }
 
             const oldDue = currTodo.dueDate;
             const due = new Date(formData.due);
 
             if (oldDue.getTime() != due.getTime()) {
-                currTodo.dueDate = due;
+                currTodo.changeDue(due);
             }
 
             const oldProjID = projectUtil.selectedProjID;
             const newProjID = formData.move;
             const oldPri = currTodo.priority;
             const newPri = formData.priority;
-
+            // switch to new proj
             if (oldProjID != newProjID) {
                 const newProj = projectUtil.projectArr.get(newProjID);
+                // delete from old map
                 currProj.itemsArr[oldPos].delete(todoID);
-                if (oldPri != newPri) {
-                    newProj.itemsArr[]
+                // update global Proj ptr
+                projectUtil.selectedProjID = newProjID;
+                if (currTodo.done) {
+                    newProj.itemsArr[6].set(todoID, currTodo);
+                    if (oldPri != newPri) currTodo.priority = newPri;
+                }
+                else {
+                    if (oldPri != newPri) {
+                        currTodo.priority = newPri;
+                        const newPos = (newPri == 0) ? 5 : (newPri - 1);
+                        newProj.itemsArr[newPos].set(todoID, currTodo);
+                    }  
+                    else {
+                        newProj.itemsArr[oldPos].set(todoID, currTodo);
+                    }
                 }
                 
             }
-
-            if (oldPri != newPri) {
-                currTodo.priority = newPri;
-                // if finished todo skip in order to keep inside the last priority Map
-                if (currTodo.done) break;
-                currProj.itemsArr[oldPos].delete(todoID);
-                const newPos = (newPri == 0) ? 5 : (newPri - 1);
-                currProj.itemsArr[newPos].set(todoID, currTodo);
+            // remain in same proj
+            else {
+                if (oldPri != newPri) { 
+                    currTodo.priority = newPri;
+                    if (!currTodo.done) {
+                        const newPos = (newPri == 0) ? 5 : (newPri - 1);
+                        currProj.itemsArr[oldPos].delete(todoID);
+                        currProj.itemsArr[newPos].set(todoID, currTodo);
+                    }
+                }
             }
-            
+            // update DOM
+            domUtil.projRefresher();
         });
 
 
@@ -619,11 +635,17 @@ export const domUtil = (() => {
         });
         
         mainPanel.append(todoWindow, tdBtn);
-
-
         
         document.body.append(sideBar, mainPanel, projDialog, toDoDialog, deletedialog, editDialog);
 
+    }
+
+    return {
+        projRefresher,
+        todoLstRefresher,
+        domInit,
     };
 
 })();
+
+export {domUtil};
