@@ -35,6 +35,7 @@ class projectUtil{
     
     markProjAsDefault(){
         projectUtil.defaultProjID = this.id;
+        projectUtil.selectedProjID = this.id;
     }
     // local storage
     static formatTask(taskObj) {
@@ -54,26 +55,34 @@ class projectUtil{
         const temp = new projectUtil(projInfo.name, projInfo.color, projInfo.isDefault, projInfo.id);
         temp.itemsArr = projInfo.itemsArr.map(mapInfo => new Map(mapInfo.map(([id, task]) => [id, this.parseTask(task)]))); 
     }
-    static saveLocal(){
+    static saveProjects(){
+        const payload = [...this.projectArr.entries()];
+        localStorage.setItem("projectJSON", JSON.stringify(payload));
+    }
+
+    static saveSelections(){
         const payload = {
-            projects : [...this.projectArr.entries()],
             selectedProjID: projectUtil.selectedProjID,
             selectedTodoID: projectUtil.selectedTodoID,
             defaultProjID: projectUtil.defaultProjID   
         }
-        localStorage.setItem("projClassPrototype", JSON.stringify(payload));
+        localStorage.setItem("selectionsJSON", JSON.stringify(payload));
     }
 
     static loadLocal(){
-        let payload = localStorage.getItem("projClassPrototype");
+        let projJSON = localStorage.getItem("projectJSON");
+        let selectionsJSON = localStorage.getItem("selectionsJSON");
         // no prior data
-        if (!payload) return false;
-        payload = JSON.parse(payload);
-        this.selectedProjID = payload.selectedProjID;
-        this.selectedTodoID = payload.selectedTodoID;
-        this.defaultProjID = payload.defaultProjID;
+        if (!projJSON) return false;
+
+        projJSON = JSON.parse(projJSON);
+        selectionsJSON = JSON.parse(selectionsJSON);
+
+        this.selectedProjID = selectionsJSON.selectedProjID;
+        this.selectedTodoID = selectionsJSON.selectedTodoID;
+        this.defaultProjID = selectionsJSON.defaultProjID;
         projectUtil.projectArr.clear();
-        payload.projects.forEach(kv => this.fromJSON(kv));
+        projJSON.forEach(kv => this.fromJSON(kv));
         return true;
     }
 

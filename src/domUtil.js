@@ -67,6 +67,8 @@ export const domUtil = (() => {
                 [...projCont.children].forEach(obj => obj.removeAttribute("selected"));
                 temp.setAttribute("selected", "");
                 projectUtil.selectedProjID = projObj.id;
+                // save selections
+                projectUtil.saveSelections();
                 todoLstRefresher();
             });
             projCont.appendChild(temp);
@@ -112,7 +114,7 @@ export const domUtil = (() => {
                     tempCont.setAttribute("style", `--theme-color-light: var(--p${i+1}-col-light); --content: "Priority: ${i+1}"; --theme-color: var(--p${i+1}-col)`);
                 }
                 // turn into arr then sort based on DateObj
-                const sortedTasks = Array.from(todoArr[i], ([k, v]) => v).sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
+                const sortedTasks = (Array.from(todoArr[i], ([k, v]) => v)).sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
                 // render todoObjs to current priCont
                 sortedTasks.forEach(todoObj => {
                     const todoDIV = document.createElement("div");
@@ -140,6 +142,8 @@ export const domUtil = (() => {
                             selectedProj.itemsArr[pos].set(id, todoObj);
                             selectedProj.itemsArr[6].delete(id);
                         }
+                        // save projects (task resides)
+                        projectUtil.saveProjects();
                         domUtil.todoLstRefresher();
                     });
 
@@ -247,10 +251,7 @@ export const domUtil = (() => {
 
     }
 
-    function domInit(){
-        // create a default project
-        const defaultProj = new projectUtil("Default Project", "blue", 1);
-        defaultProj.markProjAsDefault();
+    function domInit(loadSuccess){
 
         // dialogs for projBtn and todoBtn and deleteBtn
 
@@ -318,6 +319,9 @@ export const domUtil = (() => {
             const formContent = Object.fromEntries(new FormData(projForm));  
             const temp = new projectUtil(formContent.name, formContent.color);
             projectUtil.selectedProjID = temp.id;
+            // save both info
+            projectUtil.saveProjects();
+            projectUtil.saveSelections();
             domUtil.projRefresher();
         });
 
@@ -418,8 +422,10 @@ export const domUtil = (() => {
             if (projID) {
                 // delete current project in the backend
                 projectUtil.removeProjByID(projID);
+                // save projects
+                projectUtil.saveProjects();
                 // call projRefresher()
-                projRefresher();
+                projectUtil.projRefresher();
             }
         });
         deletedialog.append(title, disclaimer, cancelBtn, confirmBtn);
@@ -548,6 +554,8 @@ export const domUtil = (() => {
                 currProj.itemsArr[oldPos].delete(todoID);
                 // update global Proj ptr
                 projectUtil.selectedProjID = newProjID;
+                // save selections
+                projectUtil.saveSelections();
                 if (currTodo.done) {
                     newProj.itemsArr[6].set(todoID, currTodo);
                     if (oldPri != newPri) currTodo.priority = newPri;
@@ -575,6 +583,7 @@ export const domUtil = (() => {
                     }
                 }
             }
+            projectUtil.saveProjects();
             // update DOM
             domUtil.projRefresher();
         });
@@ -637,6 +646,17 @@ export const domUtil = (() => {
         mainPanel.append(todoWindow, tdBtn);
         
         document.body.append(sideBar, mainPanel, projDialog, toDoDialog, deletedialog, editDialog);
+
+        // first time load -> init default
+
+        if (!loadSuccess) {
+            const defaultProj = new projectUtil("Default Project", "blue", 1);
+            defaultProj.markProjAsDefault();
+            projectUtil.saveProjects();
+            projectUtil.saveSelections();
+        }
+
+        domUtil.projRefresher();
 
     }
 

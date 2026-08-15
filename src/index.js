@@ -5,5 +5,7 @@ import { domUtil } from "./domUtil.js";
 // sideEffect import
 import "./style.css";
 import "./reset.css";
+// load prev data
+const loadSuccess = projectUtil.loadLocal();
 // render page
-domUtil.domInit();
+domUtil.domInit(loadSuccess);
