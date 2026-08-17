@@ -1,5 +1,6 @@
+/* global styles */
 :root{
-    --side-bar-font-size: 32px;
+    --side-bar-font-size: 36px;
     --todo-title-size: 42px;
     --todo-para-size: 24px;
     --hint-text-sz: 32px;
@@ -64,17 +65,31 @@
     font-style: normal;
 }
 
-.sidebar{
+
+/* sections styles */
+body {
+    display: grid;
+    grid-template-columns: 3fr 7fr;
+
+    width: 100%;
+    height: 100vh;
+
+    overflow: hidden;
+}
+
+.sideBar{
     display: flex;
     flex-direction: column;
     height: 100%;
+    gap: 1vh;
 
     font-size: var(--side-bar-font-size, 32px);
     font-family: var(--base-font-family, 'kk');
 
     .projCont{
         display: grid;
-        grid-auto-rows: calc(85vh / 6);
+        grid-auto-rows: calc(94vh / 7);
+        gap: 1vh;
         max-height: 85%;
         overflow-y: auto;
         .projDIV{
@@ -83,6 +98,7 @@
             align-items: center;
             justify-content: center;
             color: var(--color);
+            transition: filter 0.08s ease-in-out;
             .deleteIcon{
                 position: absolute;
                 top: 3%;
@@ -95,15 +111,26 @@
                 background-color: var(--color);
             }
             &:hover {
-                filter: brightness(75%);
+                filter: brightness(92%);
+                cursor: pointer;
             }
         }
     }
 
     .projBtn {
-        min-width: 0;
-        min-height: 0;
-        height: 10%;
+        height: calc(94vh / 7);
+        display: flex;
+        padding: 9px;
+        align-items: center;
+        justify-content: center;
+        background-color: #69696911;
+        &>img:hover{    
+            transition: transform 0.08s ease-in-out;
+            will-change: transform;
+            transform: scale(1.05);
+            filter: brightness(92%);
+            cursor: pointer;
+        }
     }
 }
 
@@ -189,7 +216,8 @@
         align-items: center;
         justify-content: center;
         gap: 5%;
-        transition: transform 0.2 ease-in-out;
+        height: 5%;
+        transition: transform 0.08s ease-in-out;
         will-change: transform;
         &:hover{
             transform: scale(1.08);
@@ -199,15 +227,6 @@
 
 }
 
-body {
-    display: grid;
-    grid-template-columns: 3fr 7fr;
-
-    width: 100%;
-    height: 100vh;
-
-    overflow: hidden;
-}
 
 /* dialogs styles */
 .projDialog{
@@ -305,8 +324,17 @@ body {
             width: 45px;
             height: 45px;
         }
-        .desInput {
+        .desCont {
             font-size: var(--editDialog-des-sz);
+            position: relative;
+            .desIcon {
+                position: absolute;
+                top: 5%;
+                left: 10px;
+                width: 30px;
+                height: 30px;
+                pointer-events: none;
+            }
         }
         .iconCont {
             width: 20%;

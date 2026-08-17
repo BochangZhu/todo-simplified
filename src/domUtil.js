@@ -1,15 +1,15 @@
-import { projectUtil } from "./projectUtil";
+import { projectUtil } from "./projectUtil.js";
 import { addHours, addMinutes, addYears, format, formatRelative, isThisWeek, isToday, isYesterday, parseISO } from "date-fns";
 
-import plusIcon from "./asset/plus-icon.svg";
-import deleteIcon from "./asset/delete-icon.svg";
-import completeIcon from "./asset/complete-icon.svg";
+import plusIconPath from "./asset/plus-icon.svg";
+import deleteIconPath from "./asset/delete-icon.svg";
+import completeIconPath from "./asset/complete-icon.svg";
 import goodStatus from "./asset/good-status.svg";
 import warningStatus from "./asset/attention-status.svg";
-import settingIcon from "./asset/setting-icon.svg";
-import desIcon from "./asset/des-icon.svg";
+import settingIconPath from "./asset/setting-icon.svg";
+import desIconPath from "./asset/des-icon.svg";
 
-import { createTodoItem } from "./todoUtil";
+import { createTodoItem } from "./todoUtil.js";
 
 // iife create domUtil module
 export const domUtil = (() => {
@@ -22,7 +22,7 @@ export const domUtil = (() => {
         // append all projs from arr
         projectUtil.projectArr.forEach(projObj => {
             const temp = document.createElement("div");
-            temp.id = `-${projObj.id}`;
+            temp.id = `_${projObj.id}`;
             temp.className = "projDIV";
             temp.setAttribute("style", `--color: var(--${projObj.color})`);
             temp.textContent = projObj.name;
@@ -30,7 +30,7 @@ export const domUtil = (() => {
             if (!projObj.isDefault) {
                 const deleteIcon = document.createElement("img");
                 deleteIcon.className = "deleteIcon";
-                deleteIcon.src = deleteIcon;
+                deleteIcon.src = deleteIconPath;
                 deleteIcon.alt = "Delete project";
                 deleteIcon.style.display = "none";
                 deleteIcon.addEventListener("click", () => {
@@ -76,7 +76,7 @@ export const domUtil = (() => {
 
         // click the last selected(or default proj last selected just got deleted)
         const id = projectUtil.selectedProjID;
-        projCont.querySelector(`-${id}`).click();
+        projCont.querySelector(`#_${id}`).click();
     }
 
     function todoLstRefresher(){
@@ -122,7 +122,7 @@ export const domUtil = (() => {
                     todoDIV.id = todoObj.id;
 
                     const doneBtn = document.createElement("img");
-                    doneBtn.src = completeIcon;
+                    doneBtn.src = completeIconPath;
                     doneBtn.alt = "Mark as complete";
                     doneBtn.className = "doneBtn";
                     doneBtn.addEventListener("click", () => {
@@ -439,7 +439,7 @@ export const domUtil = (() => {
         const basicCont = document.createElement("div");
         basicCont.className = "iconCont";
         const settingIcon = document.createElement("img");
-        settingIcon.src = settingIcon;
+        settingIcon.src = settingIconPath;
         settingIcon.className = "settingIcon";
         basicCont.appendChild(settingIcon, document.createTextNode("Basic"));
 
@@ -447,10 +447,16 @@ export const domUtil = (() => {
         titleInput.type = "text";
         titleInput.className = "titleInput";
         titleInput.name = "title";
+        const desCont = document.createElement("div");
+        desCont.className = "desCont";
         const desInput = document.createElement("input");
         desInput.type = "text";
         titleInput.className = "desInput";
         desInput.name = "description";
+        const desIcon = document.createElement("img");
+        desIcon.src = desIconPath;
+        desIcon.className = "desIcon";
+        desCont.append(desInput, desIcon);
         // Setting section
         const settingCont = document.createElement("div");
         const settingIconD = settingIcon.cloneNode(true);
@@ -494,7 +500,7 @@ export const domUtil = (() => {
         BTNCont.append(left, right);
         // complete Icon
         const doneBtn = document.createElement("img");
-        doneBtn.src = completeIcon;
+        doneBtn.src = completeIconPath;
         doneBtn.alt = "Mark as complete";
         doneBtn.className = "doneBtn";
         doneBtn.addEventListener("click", () => {
@@ -504,7 +510,7 @@ export const domUtil = (() => {
             document.querySelector(`.todoDIV#${projectUtil.selectedTodoID} > .doneBtn`).click();
         });
 
-        editForm.append(basicCont, titleInput, desInput, settingCont, dueLabel, dueInput, priLabel, priInput, moveLabel, moveToProj, BTNCont, doneBtn);
+        editForm.append(basicCont, titleInput, desCont, settingCont, dueLabel, dueInput, priLabel, priInput, moveLabel, moveToProj, BTNCont, doneBtn);
         editDialog.appendChild(editForm);
         // update todo after saving
         editDialog.addEventListener("close", () => {
@@ -599,7 +605,7 @@ export const domUtil = (() => {
         const projBtn = document.createElement("div");
         projBtn.className = "projBtn";
         const plusIcon = document.createElement("img");
-        plusIcon.src = plusIcon;
+        plusIcon.src = plusIconPath;
         plusIcon.alt = "Add a new project";
         plusIcon.addEventListener("click", () => {
             projForm.reset();
@@ -621,7 +627,7 @@ export const domUtil = (() => {
         const tdBtn = document.createElement("div");
         tdBtn.className = "tdBtn";
         const plusIcon1 = document.createElement("img");
-        plusIcon1.src = plusIcon;
+        plusIcon1.src = plusIconPath;
         plusIcon1.alt = "Add a new Todo";
         const addText = document.createElement("p");
         addText.className = "addText";
@@ -667,5 +673,3 @@ export const domUtil = (() => {
     };
 
 })();
-
-export {domUtil};

@@ -17,7 +17,7 @@ export default {
   plugins: [
     new html({template: "./src/template.html",}),
   ],
-  modules: {
+  module: {
     rules: [
         {
             test: /\.css$/i,
