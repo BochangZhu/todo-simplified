@@ -15,16 +15,19 @@
     --cancel-btn-bg-col: linear-gradient(to right, #64965e, #81ff8a);
     --confirm-btn-bg-col: linear-gradient(to right, #ff025e, #d70652);
 
-    --proj-dialog-title-sz: 48px;
+    --proj-dialog-title-sz: 38px;
     --proj-dialog-input-sz: 24px;
     --delDialog-normal-sz: 32px;
     --delDialog-emp-sz: 52px;
 
     --editDialog-normal-sz: 24px;
     --editDialog-des-sz: 18px;
+
+    --items-border-radius: 12px;
 /* 
     --todo-title-sz: 36px;
     --todo-des-sz: 24px; */
+    --todoBtnCont-sz: 24px;
     --todo-status-green: brightness(0) saturate(100%) invert(69%) sepia(37%) saturate(526%) hue-rotate(42deg) brightness(90%) contrast(87%);;
     --todo-status-red: brightness(0) saturate(100%) invert(16%) sepia(43%) saturate(6678%) hue-rotate(355deg) brightness(98%) contrast(123%);
     --todo-status-yellow: brightness(0) saturate(100%) invert(83%) sepia(46%) saturate(336%) hue-rotate(356deg) brightness(102%) contrast(103%);
@@ -53,8 +56,10 @@
 
     --dim-text: #696969;
 
+    --global-bd-col: 3px solid blanchedalmond;
     --base-font-family: 'kk', 'Times New Roman', Times, serif;
-
+    --global-min-padding: 6px;
+    --gloabl-backdrop-col:rgba(0, 0, 0, 0.66);
 }
 
 @font-face {
@@ -69,12 +74,12 @@
 /* sections styles */
 body {
     display: grid;
-    grid-template-columns: 3fr 7fr;
-
+    grid-template-columns: 2.5fr 8fr;
+    border: var(--global-bd-col);
     width: 100%;
     height: 100vh;
-
     overflow: hidden;
+    border-radius: var(--items-border-radius);
 }
 
 .sideBar{
@@ -88,13 +93,16 @@ body {
 
     .projCont{
         display: grid;
-        grid-auto-rows: calc(94vh / 7);
-        gap: 1vh;
-        max-height: 85%;
+        grid-auto-rows: calc(91vh / 10);
+        row-gap: 1vh;
+        max-height: 90vh;
         overflow-y: auto;
+        user-select: none;
+        
         .projDIV{
             position: relative;
             display: flex;
+            border-radius: var(--items-border-radius);
             align-items: center;
             justify-content: center;
             color: var(--color);
@@ -118,38 +126,44 @@ body {
     }
 
     .projBtn {
-        height: calc(94vh / 7);
+        height: 9.1vh;
         display: flex;
         padding: 9px;
         align-items: center;
         justify-content: center;
         background-color: #69696911;
-        &>img:hover{    
-            transition: transform 0.08s ease-in-out;
-            will-change: transform;
-            transform: scale(1.05);
-            filter: brightness(92%);
+        border-radius: var(--items-border-radius);
+        transition: background-color 0.15s ease-in-out;
+        &:hover {         
+            background-color: #69696922;
             cursor: pointer;
-        }
+        }  
+
     }
 }
 
 .mainPanel{
+    padding: var(--global-min-padding, 6px);
     display: flex;
     flex-direction: column;
-    height: 100%;
+    border-left: var(--global-bd-col);
+    align-items: center;
+    height: 100vh;
+    gap: 10px;
+    font-family: var(--base-font-family, 'kk');
 
     .tdWin{
         display: flex;
         flex-direction: column;
-        max-height: 85%;
+        width: 100%;
+        max-height: 85vh;
         overflow-y: auto;
         .priCont{
             display: grid;
-            grid-auto-rows: 185px;
-            row-gap: 0.5rem;
+            grid-auto-rows: calc(79vh / 7);
+            row-gap: 1vh;
             position: relative;
-            border: 3px solid var(--theme-color-light); 
+            border: 3px dashed var(--theme-color-light); 
             &::after {
                 position: absolute;
                 left: 20px;
@@ -207,20 +221,30 @@ body {
         }
 
         .emptyHint {
+            height: calc(79vh / 7);
+            padding: 12px;
+            text-align: center;
             font-style: italic;
             font-size: var(--hint-text-sz);
+            user-select: none;
+            border-bottom: 3px dashed gray;
         }
     }
     .tdBtn {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 5%;
-        height: 5%;
-        transition: transform 0.08s ease-in-out;
-        will-change: transform;
+        font-size: var(--todoBtnCont-sz);
+        gap: 24px;
+        height: 7vh;
+        width: 26%;
+        padding: var(--global-min-padding);
+        background-color: #69696911;
+        transition: background-color 0.15s ease-in-out;
+        border-radius: var(--items-border-radius);
         &:hover{
-            transform: scale(1.08);
+            background-color: #69696922;
+            cursor: pointer;
         }
     }
     
@@ -231,14 +255,16 @@ body {
 /* dialogs styles */
 .projDialog{
     &::backdrop {
-        background-color: rgba(0, 0, 0, 0.25);
+        background-color: rgba(0, 0, 0, 0.66);
     }
     padding: var(--dialog-bs-padding);
     width: var(--dialog-bs-width);
     height: var(--dialog-bs-height);
+    border-radius: 18px;
     .projForm {
         display: grid;
-        grid-template-rows: 3fr 1fr 1fr 1fr 2fr 5fr;
+        grid-template-rows: 2fr 1fr 1fr 1fr 3fr 5fr;
+        row-gap: var(--global-min-padding);
         /* add proj title */
         &>p:nth-child(1) {
             font-weight: bold;
@@ -272,7 +298,7 @@ body {
     row-gap: 10%;
 
     &::backdrop {
-        background-color: rgba(0, 0, 0, 0.25);
+        background-color: var(--gloabl-backdrop-col);
     }
     &>button:first-of-type {
         background: var(--cancel-btn-bg-col);
@@ -288,6 +314,9 @@ body {
     width: var(--dialog-bs-width);
     height: var(--dialog-bs-height);
     font-size: var(--delDialog-normal-sz);
+    &::backdrop {
+        background-color: var(--gloabl-backdrop-col);
+    }
     .toDoForm {
         display: grid;
         place-items: center;
@@ -313,6 +342,9 @@ body {
 .editDialog {
     width: var(--dialog-extend-wd);
     height: var(--dialog-extend-hei);
+    &::backdrop {
+        background-color: var(--gloabl-backdrop-col);
+    }
     .editForm {
         display: grid;
         position: relative;

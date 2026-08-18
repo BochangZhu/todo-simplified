@@ -607,7 +607,7 @@ export const domUtil = (() => {
         const plusIcon = document.createElement("img");
         plusIcon.src = plusIconPath;
         plusIcon.alt = "Add a new project";
-        plusIcon.addEventListener("click", () => {
+        projBtn.addEventListener("click", () => {
             projForm.reset();
             projDialog.showModal();
         });
@@ -632,7 +632,7 @@ export const domUtil = (() => {
         const addText = document.createElement("p");
         addText.className = "addText";
         addText.textContent = "Add a new task";
-        tdBtn.appendChild(plusIcon1);
+        tdBtn.append(plusIcon1, addText);
         tdBtn.addEventListener("click", () => {
             toDoForm.reset();
             toDoDialog.showModal();
