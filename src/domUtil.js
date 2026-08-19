@@ -8,6 +8,7 @@ import goodStatus from "./asset/good-status.svg";
 import warningStatus from "./asset/attention-status.svg";
 import settingIconPath from "./asset/setting-icon.svg";
 import desIconPath from "./asset/des-icon.svg";
+import lockIconPath from "./asset/lock-Icon.svg";
 
 import { createTodoItem } from "./todoUtil.js";
 
@@ -54,6 +55,21 @@ export const domUtil = (() => {
                 });
                 temp.addEventListener("mouseleave", () => {
                     deleteIcon.style.display = "none";
+                });
+            }
+            // lock Icon for default proj
+            else {
+                const lockIcon = document.createElement("img");
+                lockIcon.className = "lockIcon";
+                lockIcon.src = lockIconPath;
+                lockIcon.alt = "locked";
+                lockIcon.style.display = "none";
+                temp.appendChild(lockIcon);
+                temp.addEventListener("mouseenter", () => {
+                    lockIcon.style.display = "";
+                });
+                temp.addEventListener("mouseleave", () => {
+                    lockIcon.style.display = "none";
                 });
             }
 
@@ -295,6 +311,7 @@ export const domUtil = (() => {
             tempInput.value = color;
             if (color == "blue") {
                 tempInput.checked = true; 
+                tempInput.defaultChecked = true;
             }
 
             tempLabel.append(tempInput, document.createTextNode(`${color}`));
@@ -303,7 +320,10 @@ export const domUtil = (() => {
         const btnCont = document.createElement("div");
         btnCont.className = "btnCont";
         const cancel = document.createElement("button");
-        cancel.type = "submit";
+        cancel.type = "button";
+        cancel.addEventListener("click", () => {
+            projDialog.close();
+        });
         cancel.textContent = "Cancel";
         const confirm = document.createElement("button");
         confirm.value = "confirm";

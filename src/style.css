@@ -8,9 +8,11 @@
     --dialog-bs-padding: 12px;
     --dialog-bs-width: 500px;
     --dialog-bs-height: 600px;
+    --dialog-sm-height: 475px;
 
     --dialog-extend-wd: 800px;
     --dialog-extend-hei: 1000px;
+    --dialog-btn-shrink: scale(0.97);
 
     --cancel-btn-bg-col: linear-gradient(to right, #64965e, #81ff8a);
     --confirm-btn-bg-col: linear-gradient(to right, #ff025e, #d70652);
@@ -24,6 +26,7 @@
     --editDialog-des-sz: 18px;
 
     --items-border-radius: 12px;
+    --deleteIcon-sz: 24px;
 /* 
     --todo-title-sz: 36px;
     --todo-des-sz: 24px; */
@@ -56,7 +59,7 @@
 
     --dim-text: #696969;
 
-    --global-bd-col: 3px solid blanchedalmond;
+    --global-bd-col: 5px solid blanchedalmond;
     --base-font-family: 'kk', 'Times New Roman', Times, serif;
     --global-min-padding: 6px;
     --gloabl-backdrop-col:rgba(0, 0, 0, 0.66);
@@ -70,6 +73,25 @@
     font-style: normal;
 }
 
+input:not([type=radio]) {
+    all: unset;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    border: 3px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: var(--base-font-family);
+    background-color: #fff;
+    color: #222;
+    width: 100%;
+    transition: border-color 0.15s ease-in-out;
+
+    &:focus {
+        outline: none;
+        border-color: #3b82f633;
+        box-shadow: 0 0 0 3px rgba(47, 109, 209, 0.08);    
+    }
+}
 
 /* sections styles */
 body {
@@ -80,6 +102,7 @@ body {
     height: 100vh;
     overflow: hidden;
     border-radius: var(--items-border-radius);
+    background-color: #eae7dc;
 }
 
 .sideBar{
@@ -101,21 +124,36 @@ body {
         
         .projDIV{
             position: relative;
+
             display: flex;
             border-radius: var(--items-border-radius);
             align-items: center;
             justify-content: center;
+
             color: var(--color);
+            background-color: #69696922;
+            font-weight: bold;
+            -webkit-text-stroke: 0.01px rgb(84, 84, 84, 0.5);
+
             transition: filter 0.08s ease-in-out;
-            .deleteIcon{
+            transition: background-color 0.15s ease-in-out;
+            &:hover {         
+                background-color: #69696933;
+                cursor: pointer;
+            }  
+            .deleteIcon, .lockIcon{
                 position: absolute;
-                top: 3%;
-                right: 3%;
-                width: 10%;
-                height: 10%;
+                top: var(--global-min-padding);
+                right: var(--global-min-padding);
+                width: var(--deleteIcon-sz);
+                height: var(--deleteIcon-sz);
+            }
+            .lockIcon:hover {
+                cursor: not-allowed;
             }
             &[selected]{
-                color: white;
+                color: rgb(100, 100, 100);
+                font-weight: bold;
                 background-color: var(--color);
             }
             &:hover {
@@ -259,16 +297,64 @@ body {
     }
     padding: var(--dialog-bs-padding);
     width: var(--dialog-bs-width);
-    height: var(--dialog-bs-height);
+    height: var(--dialog-sm-height);
     border-radius: 18px;
+    font-family: var(--base-font-family);
+    font-size: 24px;
     .projForm {
         display: grid;
-        grid-template-rows: 2fr 1fr 1fr 1fr 3fr 5fr;
+        grid-template-rows: 2fr 1fr 1.25fr 0.5fr 1fr 1.5fr 0.5fr 1fr;
         row-gap: var(--global-min-padding);
         /* add proj title */
         &>p:nth-child(1) {
             font-weight: bold;
             font-size: var(--proj-dialog-title-sz);
+        }
+        input {
+            border-radius: 15px;
+        }
+        .color {
+            grid-row-start: 5;
+        }
+        .colorCont {
+            grid-row-start: 6;            
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #80808033;
+            border-radius: 24px;
+            &>label {
+                font-weight: bold;
+                display: flex;
+                gap: 6px;
+                -webkit-text-stroke: 0.05px rgb(52, 52, 52, 0.5);
+                input {
+                    width: 50%;
+                }
+            }
+        }
+        .btnCont {
+            grid-row-start: 8;
+            display: flex;
+            justify-content: center;
+            gap: 17.5%;
+            button {
+                transition: all 0.15s ease-in-out;
+                border-radius: 6px;
+                &:active{
+                    transform: var(--dialog-btn-shrink);
+                    border-radius: 6px;
+                }
+            }
+            :first-child {                
+                background-color: transparent;
+                color: #555;
+                border-color: #ccc;
+                
+            }
+            :last-child {
+                background-color: #3b82f655;
+            }
         }
         .colorRadio {
             accent-color: var(--color-fill);
