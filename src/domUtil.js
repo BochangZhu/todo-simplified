@@ -9,7 +9,7 @@ import warningStatus from "./asset/attention-status.svg";
 import settingIconPath from "./asset/setting-icon.svg";
 import desIconPath from "./asset/des-icon.svg";
 import lockIconPath from "./asset/lock-Icon.svg";
-
+import warningIconPath from "./asset/warning-Icon.svg";
 import { createTodoItem } from "./todoUtil.js";
 
 // iife create domUtil module
@@ -21,7 +21,7 @@ export const domUtil = (() => {
         projDomArr.forEach(obj => obj.remove());
 
         // append all projs from arr
-        projectUtil.projectArr.forEach(projObj => {
+        projectUtil.projectArr.forEach(projObj => { 
             const temp = document.createElement("div");
             temp.id = `_${projObj.id}`;
             temp.className = "projDIV";
@@ -37,13 +37,16 @@ export const domUtil = (() => {
                 deleteIcon.addEventListener("click", () => {
                     // personalize & open deleteDialog
                     const deleteDialog = document.querySelector(".deleteDialog");
-                    deleteDialog.querySelector(".projName").textContent = projObj.name;
-                    deleteDialog.querySelector(".itemsCount").textContent = projObj.itemsArr.length;
+                    deleteDialog.querySelector(".projName").textContent = `"${projObj.name}"`;
+                    deleteDialog.querySelector(".itemsCount").textContent = projObj.itemsArr.reduce((acc, map) => {
+                        return (acc + map.size);
+                    }, 0);
+                    deleteDialog.querySelector(".finCount").textContent = projObj.itemsArr[6].size;
                     // wipes prev confirm btn event Listener
                     const confirmBtn = deleteDialog.querySelector(".confirm");
                     const tempClone = confirmBtn.cloneNode(true);
                     confirmBtn.replaceWith(tempClone);
-                    confirmBtn.addEventListener("click", () => {
+                    tempClone.addEventListener("click", () => {
                         deleteDialog.close(projObj.id);
                     });
                     // open deleteDialog
@@ -74,9 +77,9 @@ export const domUtil = (() => {
             }
 
             // also have event that when clicked, render the todolist in the main panel
-            temp.addEventListener("click", () => {
+            temp.addEventListener("click", (e) => {
                 // ignore action for multi click
-                if (temp.hasAttribute("selected")) {
+                if (temp.hasAttribute("selected") || (e.currentTarget !== e.target)) {
                     return;
                 }
                 // clear existing attribute
@@ -422,21 +425,32 @@ export const domUtil = (() => {
 
         const disclaimer = document.createElement("div"); 
         disclaimer.className = "disclaimer";
-        disclaimer.textContent = "Warning: Deleting this project will permanently remove all associated to-do items. Current to-do counts: ";
+        const warningIcon = document.createElement("img");
+        warningIcon.src = warningIconPath;
         const itemsCount = document.createElement("span");
-        itemsCount.className = "itemsCount";
-        disclaimer.appendChild(itemsCount);
+        itemsCount.className = "itemsCount";        
+        const finCount = document.createElement("span");
+        finCount.className = "finCount";
+        disclaimer.append(warningIcon, "You would lose permanent access to ", itemsCount, " tasks (", finCount, " done).");
+
+
+        const fin = document.createElement("div"); 
+        fin.className = "finish";
+        const warningIconD = warningIcon.cloneNode();
+        fin.append(warningIconD, "This action cannot be undone.");
 
         const cancelBtn = document.createElement("button");
         cancelBtn.className = "cancel";
+        cancelBtn.textContent = "Cancel";
         cancelBtn.addEventListener("click", () => {
             deletedialog.close("");
         });
         const confirmBtn = document.createElement("button");
         confirmBtn.className = "confirm";
+        confirmBtn.textContent = "Confirm";
 
         deletedialog.addEventListener("close", () => {
-            const projID = +deletedialog.returnValue;
+            const projID = deletedialog.returnValue;
             
             // if confirm Btn is clicked
             if (projID) {
@@ -445,10 +459,10 @@ export const domUtil = (() => {
                 // save projects
                 projectUtil.saveProjects();
                 // call projRefresher()
-                projectUtil.projRefresher();
+                domUtil.projRefresher();
             }
         });
-        deletedialog.append(title, disclaimer, cancelBtn, confirmBtn);
+        deletedialog.append(title, disclaimer, fin, cancelBtn, confirmBtn);
 
         // todoEditDialog
         const editDialog = document.createElement("dialog");

@@ -18,7 +18,7 @@ class projectUtil{
 
         // unique id, add to projArr
         this.id = id;
-        projectUtil.projectArr.set(this.id, this);
+        projectUtil.projectArr.set(this.id, this);  
     }
 
     updateName(newName) {

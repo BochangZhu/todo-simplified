@@ -14,13 +14,10 @@
     --dialog-extend-hei: 1000px;
     --dialog-btn-shrink: scale(0.97);
 
-    --cancel-btn-bg-col: linear-gradient(to right, #64965e, #81ff8a);
-    --confirm-btn-bg-col: linear-gradient(to right, #ff025e, #d70652);
-
     --proj-dialog-title-sz: 38px;
     --proj-dialog-input-sz: 24px;
-    --delDialog-normal-sz: 32px;
-    --delDialog-emp-sz: 52px;
+    --delDialog-normal-sz: 18px;
+    --delDialog-emp-sz: 26px;
 
     --editDialog-normal-sz: 24px;
     --editDialog-des-sz: 18px;
@@ -63,6 +60,8 @@
     --base-font-family: 'kk', 'Times New Roman', Times, serif;
     --global-min-padding: 6px;
     --gloabl-backdrop-col:rgba(0, 0, 0, 0.66);
+    --global-dialog-bdRad: 18px;
+    --confirmBtn-col: #3b82f655;
 }
 
 @font-face {
@@ -127,16 +126,15 @@ body {
 
             display: flex;
             border-radius: var(--items-border-radius);
+            border: 2px solid black;
             align-items: center;
             justify-content: center;
 
-            color: var(--color);
-            background-color: #69696922;
+            color: rgb(105, 105, 105);
+            background-color: #74747422;
+            text-shadow: 0 0 5px var(--color), 0 0 10px var(--color), 0 0 2.5px var(--color), 0 0 15px var(--color);
             font-weight: bold;
-            -webkit-text-stroke: 0.01px rgb(84, 84, 84, 0.5);
-
-            transition: filter 0.08s ease-in-out;
-            transition: background-color 0.15s ease-in-out;
+            transition: filter 0.08s ease-in-out, background-color 0.15s ease-in-out;
             &:hover {         
                 background-color: #69696933;
                 cursor: pointer;
@@ -155,6 +153,7 @@ body {
                 color: rgb(100, 100, 100);
                 font-weight: bold;
                 background-color: var(--color);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             }
             &:hover {
                 filter: brightness(92%);
@@ -291,6 +290,9 @@ body {
 
 
 /* dialogs styles */
+dialog {
+    border-radius: var(--global-dialog-bdRad);
+}
 .projDialog{
     &::backdrop {
         background-color: rgba(0, 0, 0, 0.66);
@@ -298,7 +300,6 @@ body {
     padding: var(--dialog-bs-padding);
     width: var(--dialog-bs-width);
     height: var(--dialog-sm-height);
-    border-radius: 18px;
     font-family: var(--base-font-family);
     font-size: 24px;
     .projForm {
@@ -353,7 +354,7 @@ body {
                 
             }
             :last-child {
-                background-color: #3b82f655;
+                background-color: var(--confirmBtn-col);
             }
         }
         .colorRadio {
@@ -370,28 +371,48 @@ body {
     display: grid;
     padding: var(--dialog-bs-padding);
     width: var(--dialog-bs-width);
-    height: var(--dialog-bs-height);
-    grid-template: 1fr 3fr 3fr / 1fr 1fr;
-    /* make sure have good layout */
+    height: var(--dialog-sm-height);
+    grid-template: repeat(4, 1fr) / 1fr 1fr;
     font-size: var(--delDialog-normal-sz);
-    .projName, .itemsCount{
+    border-radius: var(--global-dialog-bdRad);
+    align-items: center;
+    .projName, .itemsCount, .finCount{
         font-weight: bold;
         font-size: var(--delDialog-emp-sz);
     }
-    .title, .disclaimer {
-        grid-row-start: span 2;
+    .title, .disclaimer, .finish {
+        grid-column-start: span 2;
     }
-    row-gap: 10%;
+    .disclaimer, .finish {
+        margin-left: 5%;
+        display: flex;
+        align-items: center;
+        gap: var(--global-min-padding);
+        img {
+            display: inline;
+            width: var(--deleteIcon-sz);
+            height: var(--deleteIcon-sz);
+        }
+    }
+    row-gap: var(--global-min-padding);
 
     &::backdrop {
         background-color: var(--gloabl-backdrop-col);
     }
     &>button:first-of-type {
-        background: var(--cancel-btn-bg-col);
+        justify-self: center;
+        border-radius: var(--items-border-radius);
+        width: 33%;
+        background-color: transparent;
+        color: #555;
+        border-color: #ccc;
     }
 
     &>button:last-of-type {
-        background: var(--confirm-btn-bg-col);
+        justify-self: center;
+        border-radius: var(--items-border-radius);
+        width: 33%;
+        background: var(--confirmBtn-col);
     }
 }
 
