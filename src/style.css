@@ -194,17 +194,21 @@ body {
         flex-direction: column;
         width: 100%;
         max-height: 85vh;
-        overflow-y: auto;
+        overflow-y: auto;            
+        grid-auto-rows: calc(79vh / 7);
+        row-gap: 1vh;
         .priCont{
             display: grid;
-            grid-auto-rows: calc(79vh / 7);
-            row-gap: 1vh;
             position: relative;
+            grid-auto-rows: calc((79vh - 12px) / 7 / 3);
+            row-gap: var(--global-min-padding);
+            overflow-y: auto;
             border: 3px dashed var(--theme-color-light); 
             &::after {
                 position: absolute;
                 left: 20px;
                 top: 20px;
+                font-size: 1rem;
                 content: var(--content);
                 color: var(--theme-color);
             }       
@@ -213,7 +217,7 @@ body {
                 position: relative;
                 align-items: center;
                 grid-template-columns: 1fr 6fr 1fr 6fr;
-                border-bottom: 3px dashed gray;
+                border-bottom: 3px dashed var(--theme-color-light);
                 gap: 10%;
                 font-size: var(--todo-para-size);
                 .title {
@@ -419,28 +423,41 @@ dialog {
 .toDoDialog{
     padding: var(--dialog-bs-padding);
     width: var(--dialog-bs-width);
-    height: var(--dialog-bs-height);
+    height: var(--dialog-sm-height);
     font-size: var(--delDialog-normal-sz);
     &::backdrop {
         background-color: var(--gloabl-backdrop-col);
     }
     .toDoForm {
         display: grid;
-        place-items: center;
-        grid-template: 3fr repeat(8, 1fr) 3fr; 
+        align-items: center;
+        grid-template: 3fr repeat(8, 1fr) 2fr; 
+        row-gap: var(--global-min-padding);
+        input {
+            font-weight: bold;
+        }
         p {
+            border-bottom: 1px solid grey;
             font-size: var(--delDialog-emp-sz);
             font-weight: bold;
             justify-self: flex-start;
         }
         .btnCont {
             display: flex;
+            grid-row-start: 10;
             justify-content: space-around;
-            &>button:first-child{
-                background: var(--cancel-btn-bg-col);
+            margin-top: 1em;
+            button:first-child{
+                border-radius: var(--items-border-radius);
+                width: 22%;
+                background-color: transparent;
+                color: #555;
+                border-color: #ccc;
             }
-            &>button:last-child{
-                background: var(--confirm-btn-bg-col);
+            button:last-child{
+                border-radius: var(--items-border-radius);
+                width: 22%;
+                background: var(--confirmBtn-col);
             }
         }
     }

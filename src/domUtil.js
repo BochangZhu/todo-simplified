@@ -11,6 +11,7 @@ import desIconPath from "./asset/des-icon.svg";
 import lockIconPath from "./asset/lock-Icon.svg";
 import warningIconPath from "./asset/warning-Icon.svg";
 import { createTodoItem } from "./todoUtil.js";
+import { enUS } from "date-fns/locale";
 
 // iife create domUtil module
 export const domUtil = (() => {
@@ -118,7 +119,7 @@ export const domUtil = (() => {
         else{
             for (let i = 0; i < 7; i++) {
                 // skip empty cont
-                if (todoArr[i].length == 0) continue;
+                if (!todoArr[i].size) continue;
                 // priority container only for 0 - 4
                 const tempCont = document.createElement("div");
                 tempCont.className = "priCont";
@@ -218,6 +219,7 @@ export const domUtil = (() => {
                         const opt = {
                             weekStartsOn : 1,
                             locale: {
+                                ...enUS, 
                                 formatRelative: (token) => customFormat[token]
                             }
                         };
@@ -256,6 +258,7 @@ export const domUtil = (() => {
                                 opt.selected = true;
                                 opt.textContent += " (current)";
                             }
+                            move.appendChild(opt);
                         });
 
                         document.querySelector(".editDialog").showModal();
@@ -348,6 +351,7 @@ export const domUtil = (() => {
             domUtil.projRefresher();
         });
 
+
         // todoDialog
         const toDoDialog = document.createElement("dialog");
         toDoDialog.className = "toDoDialog";
@@ -355,7 +359,7 @@ export const domUtil = (() => {
         toDoForm.className = "toDoForm";
         toDoForm.method = "dialog";
         const headline = document.createElement("p");
-        headline.textContent = "Add to-do";
+        headline.textContent = "Create Task";
         const titleL = document.createElement("label");
         titleL.textContent = "Title";
         titleL.htmlFor = "titleI";
@@ -366,6 +370,7 @@ export const domUtil = (() => {
         titleI.required = true;
 
         const desL = document.createElement("label");
+        desL.textContent = "Description";
         desL.htmlFor = "desI";
         const desI = document.createElement("input");
         desI.id = "desI";
@@ -389,7 +394,7 @@ export const domUtil = (() => {
 
         const priL = document.createElement("label");
         priL.htmlFor = "priI";
-        priL.textContent = "Priority (0 for no priority)";
+        priL.textContent = "Priority (0 to opt out)";
         const priI = document.createElement("input");
         priI.id = "priI";
         priI.name = "priority";
@@ -401,15 +406,19 @@ export const domUtil = (() => {
         const btnWrap = document.createElement("div");
         btnWrap.className = "btnCont";
         const noBtn = document.createElement("button");
-        noBtn.textContent = "cancel";
-        noBtn.type = "submit";
+        noBtn.textContent = "Cancel";
+        noBtn.type = "button";
+        noBtn.addEventListener("click", () => {
+            toDoDialog.close("");
+        });
         const yesBtn = document.createElement("button");
         yesBtn.value = "submit";
         yesBtn.type = "submit";
-        yesBtn.textContent = "confirm";
+        yesBtn.textContent = "Confirm";
         btnWrap.append(noBtn, yesBtn);
         toDoForm.append(headline, titleL, titleI, desL, desI, dueL, dueI, priL, priI, btnWrap);
         toDoDialog.appendChild(toDoForm);
+
 
         // deleteDialog
         const deletedialog = document.createElement("dialog");
@@ -456,13 +465,15 @@ export const domUtil = (() => {
             if (projID) {
                 // delete current project in the backend
                 projectUtil.removeProjByID(projID);
-                // save projects
+                // save all
                 projectUtil.saveProjects();
+                projectUtil.saveSelections();
                 // call projRefresher()
                 domUtil.projRefresher();
             }
         });
         deletedialog.append(title, disclaimer, fin, cancelBtn, confirmBtn);
+
 
         // todoEditDialog
         const editDialog = document.createElement("dialog");
@@ -680,7 +691,8 @@ export const domUtil = (() => {
             const tempTodo = createTodoItem(formContent.title, formContent.description, parseISO(formContent.due), formContent.priority);
             const pos = (tempTodo.priority == 0) ? 5 : (tempTodo.priority - 1);
             currProj.itemsArr[pos].set(tempTodo.uid, tempTodo);
-            projectUtil.todoLstRefresher();
+            projectUtil.saveProjects();
+            domUtil.todoLstRefresher();
         });
         
         mainPanel.append(todoWindow, tdBtn);
