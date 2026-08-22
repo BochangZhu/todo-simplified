@@ -1,5 +1,5 @@
 import { projectUtil } from "./projectUtil.js";
-import { addHours, addMinutes, addYears, format, formatRelative, isThisWeek, isToday, isYesterday, parseISO } from "date-fns";
+import { addHours, addMinutes, addYears, format, formatRelative, isThisWeek, isToday, isTomorrow, isYesterday, parseISO } from "date-fns";
 
 import plusIconPath from "./asset/plus-icon.svg";
 import deleteIconPath from "./asset/delete-icon.svg";
@@ -10,6 +10,8 @@ import settingIconPath from "./asset/setting-icon.svg";
 import desIconPath from "./asset/des-icon.svg";
 import lockIconPath from "./asset/lock-Icon.svg";
 import warningIconPath from "./asset/warning-Icon.svg";
+import expandIconPath from "./asset/expand-icon.svg";
+
 import { createTodoItem } from "./todoUtil.js";
 import { enUS } from "date-fns/locale";
 
@@ -125,7 +127,8 @@ export const domUtil = (() => {
                 tempCont.className = "priCont";
                 // set color theme var
                 if (i == 6) {
-                    tempCont.setAttribute("style", `--theme-color-light: var(--p${i+1}-col-light); --content: "Completed Tasks, we still remember you.."; --theme-color: var(--p${i+1}-col)`);
+                    tempCont.setAttribute("style", `--theme-color-light: var(--p${i+1}-col-light); --content: "Completed Tasks, we still remember you.."; --theme-color: var(--p${i+1}-col); --sm-font: 18px;`);
+                    tempCont.setAttribute("completed", "");
                 }
                 else if (i == 5) {
                     tempCont.setAttribute("style", `--theme-color-light: var(--p${i+1}-col-light); --content: ""; --theme-color: var(--p${i+1}-col)`);
@@ -139,7 +142,7 @@ export const domUtil = (() => {
                 sortedTasks.forEach(todoObj => {
                     const todoDIV = document.createElement("div");
                     todoDIV.className = "todoDIV";
-                    todoDIV.id = todoObj.id;
+                    todoDIV.id = todoObj.uid;
 
                     const doneBtn = document.createElement("img");
                     doneBtn.src = completeIconPath;
@@ -175,6 +178,9 @@ export const domUtil = (() => {
                     statusIcon.className = "statusIcon";
                     const statusDes = document.createElement("div");
                     statusDes.className = "statusDes";
+                    const statusCont = document.createElement("div");
+                    statusCont.className = "statusCont";
+                    statusCont.append(statusIcon, statusDes);
                     // show different Icon based on now - deadline
                     const dueDate = todoObj.dueDate;
                     const now = new Date();
@@ -202,7 +208,7 @@ export const domUtil = (() => {
 
                     // customize dueDate display
                     // case for monday - sunday
-                    if (isThisWeek(dueDate, {weekStartsOn: 1}) && !isToday(dueDate) && !isYesterday(dueDate)) {
+                    if (isThisWeek(dueDate, {weekStartsOn: 1}) && !isToday(dueDate) && !isYesterday(dueDate) && !isTomorrow(dueDate)) {
                         statusDes.textContent = format(dueDate, "eeee h:mm a");
                     }
                     // keyword case
@@ -227,7 +233,7 @@ export const domUtil = (() => {
                     }
                     const expandIcon = document.createElement("img");
                     expandIcon.className = "expandIcon";
-                    expandIcon.src = expandIcon;
+                    expandIcon.src = expandIconPath;
                     expandIcon.addEventListener("click", () => {
                         // set currTodoID to be this task
                         projectUtil.selectedTodoID = todoObj.id;
@@ -264,7 +270,7 @@ export const domUtil = (() => {
                         document.querySelector(".editDialog").showModal();
                     });
 
-                    todoDIV.append(doneBtn, title, statusIcon, statusDes, expandIcon);
+                    todoDIV.append(doneBtn, title, statusCont, expandIcon);
                     tempCont.appendChild(todoDIV);
                 });
                 tdWin.appendChild(tempCont);

@@ -37,6 +37,7 @@ function createTodoItem(tit = "No Title", des = "No Description", due = new Date
         changeTitle,
         changeDes,
         changeDue,
+        finishTask,
     };
 }
 
